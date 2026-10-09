@@ -1,0 +1,40 @@
+# Configuration du projet : modifier ce fichier change le comportement SANS toucher au code.
+
+data:
+  raw_path: data/raw/Advertising.csv
+  processed_path: data/processed/advertising_clean.csv
+  target: Sales                      # ventes (en milliers d'unités)
+  channels: [TV, Radio, Newspaper]   # budgets (en milliers de dollars) = contrat d'entrée du modèle
+  drop_columns: ["Unnamed: 0"]       # simple index présent dans le CSV d'origine
+
+features:
+  # Sélection de variables (voir notebook, section 6) : Newspaper n'a aucun effet mesurable
+  # (p-value = 0,66 et aucun gain en validation croisée). Pour le réintégrer : [TV, Radio, Newspaper].
+  selected: [TV, Radio]
+  interaction: true                  # termes croisés TV x Radio (effet de synergie)
+  quadratic: [TV]                    # TV^2 (rendements décroissants)
+
+model:
+  fit_intercept: true
+
+split:
+  test_size: 0.2
+  random_state: 42
+
+cv:
+  n_splits: 5
+  n_repeats: 5
+
+quality_gate:
+  min_r2: 0.95                       # l'entraînement (et donc le build Docker) échoue en dessous
+
+optimizer:
+  step: 1.0                          # pas de la grille de recherche (milliers de $)
+
+api:
+  max_budget_per_channel: 1000       # validation d'entrée
+  max_total_budget: 3000
+
+paths:
+  model_dir: models
+  reports_dir: reports

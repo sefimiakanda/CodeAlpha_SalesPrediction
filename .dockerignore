@@ -1,0 +1,19 @@
+# Sans ce fichier, Docker envoie .venv (centaines de Mo) au moteur : build très lent.
+.venv
+.git
+.github
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.ipynb_checkpoints
+.coverage
+htmlcov
+notebooks
+tests
+reports
+models
+data/processed
+.env
+*.md
+!README.md

@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.ipynb_checkpoints/
+.env
+
+# Artefacts générés (jamais versionnés) : `uv run sales-train` les recrée
+models/*
+!models/.gitkeep
+reports/*
+!reports/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+.vscode/
+.idea/
+.DS_Store
