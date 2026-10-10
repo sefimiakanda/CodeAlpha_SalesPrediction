@@ -47,7 +47,7 @@ CodeAlpha_SalesPrediction/
 │   ├── analysis.py           # OLS statistics, marginal effects, what-if, budget optimizer
 │   ├── train.py              # Training CLI with quality gate
 │   ├── predict.py            # Model loading and inference service
-│   └── api/                  # FastAPI app, schemas, web interface (static/index.html)
+│   └── api/                  # FastAPI app, schemas, Web interface: index.html, styles.css, app.js
 ├── tests/                    # Unit and integration tests
 ├── Dockerfile · .dockerignore
 ├── render.yaml               # Render Blueprint (Docker deployment)
