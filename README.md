@@ -7,7 +7,7 @@
 ![uv](https://img.shields.io/badge/uv-package%20manager-purple)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7?logo=render&logoColor=white)
-![CI](https://github.com/<your-username>/<your-repo>/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/sefimiakanda/CodeAlpha_SalesPredictions/actions/workflows/ci.yml/badge.svg)
 
 Forecast sales from advertising budgets, measure the impact of each channel, and recommend a better budget split — from exploratory notebook to a Dockerized API deployed on Render.
 
