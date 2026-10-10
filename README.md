@@ -11,7 +11,7 @@
 
 Forecast sales from advertising budgets, measure the impact of each channel, and recommend a better budget split — from exploratory notebook to a Dockerized API deployed on Render.
 
-🔗 **Live demo:** `https://<your-service>.onrender.com` *(replace with your Render URL; the free tier may take about a minute to wake up)*
+🔗 **Live demo:** [https://sales-prediction-api-666i.onrender.com](https://sales-prediction-api-666i.onrender.com)
 
 ## 🎯 Project Overview
 
