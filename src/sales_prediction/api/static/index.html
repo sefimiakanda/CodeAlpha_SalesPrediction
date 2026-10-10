@@ -7,38 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#f4efe6;--card:#fffdf8;--ink:#1b2230;--muted:#6b7280;--line:#e2dacb;--tv:#355c9a;--radio:#e4572e;--news:#8b95a1;--ok:#1f7a4d;--warn:#8a5a00;--warnbg:#fdf0d5}
-@media(prefers-color-scheme:dark){:root{--bg:#141922;--card:#1c2330;--ink:#eef1f6;--muted:#9aa5b5;--line:#2c3647;--tv:#7aa2e3;--radio:#ff8a66;--news:#a3adba;--ok:#5fd19a;--warn:#f2c36b;--warnbg:#3a2f12}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,"Segoe UI",system-ui,sans-serif;line-height:1.5}
-main{max-width:1000px;margin:0 auto;padding:30px 18px 50px}
-h1{font-size:clamp(1.7rem,4vw,2.5rem);line-height:1.1;font-weight:800;letter-spacing:-.02em;margin:0 0 8px}
-.lead{color:var(--muted);margin:0 0 24px;max-width:62ch}
-.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:start}
-@media(max-width:800px){.layout{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
-h2{font-size:1.05rem;margin:0 0 14px}
-.ch{border-left:5px solid var(--c);padding:2px 0 2px 14px;margin-bottom:20px}
-.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.row label{font-weight:600}.row small{color:var(--muted);font-weight:400}
-.num{width:90px;padding:7px 9px;font:inherit;text-align:right;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:8px}
-input[type=range]{width:100%;accent-color:var(--c);margin:8px 0 0}
-input:focus-visible,button:focus-visible{outline:3px solid var(--c,var(--tv));outline-offset:2px}
-.total{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:12px;font-weight:600}
-.big{font-size:clamp(3rem,9vw,4.4rem);font-weight:800;letter-spacing:-.03em;line-height:1;margin:2px 0}
-.muted{color:var(--muted);margin:0}
-.eff{margin:14px 0 4px}
-.eff .bar{height:9px;border-radius:5px;background:var(--c);width:var(--w,0%);min-width:3px;transition:width .35s}
-.eff .t{display:flex;justify-content:space-between;font-size:.9rem}
-.warn{background:var(--warnbg);color:var(--warn);padding:9px 12px;border-radius:10px;font-size:.88rem;margin-top:10px}
-button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:12px 18px;cursor:pointer;background:var(--ink);color:var(--bg)}
-button.alt{background:none;color:var(--tv);text-decoration:underline;padding:8px 4px}
-.opt{margin-top:20px}
-.split{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px 14px;margin:14px 0;font-size:.95rem;align-items:center}
-.split b{font-weight:600}.gain{color:var(--ok);font-weight:800;font-size:1.15rem}
-.note{font-size:.8rem;color:var(--muted);margin-top:18px}
-</style>
+<link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
 <main>
@@ -74,76 +43,6 @@ button.alt{background:none;color:var(--tv);text-decoration:underline;padding:8px
   <p class="note" id="info">Budgets in thousands of dollars, sales in thousands of units (units of the original dataset).</p>
 </main>
 
-<script>
-const $ = (id) => document.getElementById(id);
-const CH = ["tv", "radio", "newspaper"];
-const NAMES = {tv: "TV", radio: "Radio", newspaper: "Newspaper"};
-const COLORS = {tv: "var(--tv)", radio: "var(--radio)", newspaper: "var(--news)"};
-let timer, lastBest = null;
-
-const budget = () => Object.fromEntries(CH.map((c) => [c, +$(c + "-n").value || 0]));
-const setBudget = (b) => CH.forEach((c) => { $(c).value = b[c]; $(c + "-n").value = b[c]; });
-const fmt = (n, d = 1) => n.toLocaleString("en-US", {minimumFractionDigits: d, maximumFractionDigits: d});
-
-CH.forEach((c) => {
-  $(c).oninput = () => { $(c + "-n").value = $(c).value; refresh(); };
-  $(c + "-n").oninput = () => { $(c).value = $(c + "-n").value; refresh(); };
-});
-
-function refresh() {
-  const b = budget();
-  $("total").textContent = fmt(b.tv + b.radio + b.newspaper) + " k$";
-  clearTimeout(timer);
-  timer = setTimeout(() => forecast(b), 250);
-}
-
-async function post(url, body) {
-  const r = await fetch(url, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
-  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || "The service is unavailable, please retry.");
-  return r.json();
-}
-
-async function forecast(b) {
-  try {
-    const d = await post("/predict", b);
-    $("sales").textContent = fmt(d.predicted_sales);
-    const maxEff = Math.max(...Object.values(d.marginal_effects), 0.0001);
-    $("effects").replaceChildren(...CH.map((c) => {
-      const e = d.marginal_effects[NAMES[c]], row = document.createElement("div");
-      row.className = "eff"; row.style.cssText = `--c:${COLORS[c]};--w:${Math.max(e / maxEff, 0) * 100}%`;
-      row.innerHTML = `<div class="t"><span>${NAMES[c]}</span><span>${e < 0.0005 ? "no effect" : "+" + fmt(e * 1000, 0) + " units per extra $1k"}</span></div><div class="bar"></div>`;
-      return row;
-    }));
-    $("warnings").replaceChildren(...d.warnings.map((w) => Object.assign(document.createElement("div"), {className: "warn", textContent: w})));
-  } catch (err) {
-    $("warnings").replaceChildren(Object.assign(document.createElement("div"), {className: "warn", textContent: err.message}));
-  }
-}
-
-$("opt").onclick = async () => {
-  const b = budget(), total = b.tv + b.radio + b.newspaper;
-  if (total <= 0) { $("optres").textContent = "Set a budget above zero first."; return; }
-  $("opt").disabled = true;
-  try {
-    const d = await post("/optimize", {total_budget: total, current: b});
-    lastBest = {tv: d.allocation.TV, radio: d.allocation.Radio, newspaper: d.allocation.Newspaper};
-    $("optres").innerHTML = `<div class="split"><span></span><b>Current</b><b>Recommended</b>` +
-      CH.map((c) => `<span style="color:${COLORS[c]};font-weight:600">${NAMES[c]}</span><span>${fmt(b[c])} k$</span><span>${fmt(lastBest[c])} k$</span>`).join("") +
-      `<b>Sales</b><span>${fmt(d.current_predicted_sales)}</span><span>${fmt(d.predicted_sales)}</span></div>` +
-      `<p class="gain">${d.uplift >= 0.05 ? "+" + fmt(d.uplift) + " thousand units (" + fmt(d.uplift_pct) + " %)" : "Your split is already near-optimal."}</p>` +
-      `<button id="apply">Apply this split</button> <small class="muted">${d.warnings[0]}</small>`;
-    $("apply").onclick = () => { setBudget(lastBest); refresh(); };
-  } catch (err) { $("optres").textContent = err.message; }
-  finally { $("opt").disabled = false; }
-};
-
-fetch("/model/info").then((r) => r.json()).then((m) => {
-  const r2 = m.metrics?.cross_validation?.r2_mean;
-  if (r2) $("info").textContent += ` Model: linear regression with TV×Radio synergy and diminishing TV returns (cross-validated R² ${fmt(r2, 3)}, trained on ${m.n_samples} observations). Estimates are indicative.`;
-}).catch(() => {});
-
-setBudget({tv: 150, radio: 25, newspaper: 30});
-refresh();
-</script>
+<script src="/static/app.js" defer></script>
 </body>
 </html>

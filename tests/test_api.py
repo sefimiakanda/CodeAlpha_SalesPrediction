@@ -25,6 +25,14 @@ def test_home_page_is_served(client):
     assert response.status_code == 200 and "text/html" in response.headers["content-type"]
 
 
+def test_static_assets_are_served(client):
+    css, js = client.get("/static/styles.css"), client.get("/static/app.js")
+    assert css.status_code == 200 and "text/css" in css.headers["content-type"]
+    assert js.status_code == 200 and "javascript" in js.headers["content-type"]
+    page = client.get("/").text
+    assert "/static/styles.css" in page and "/static/app.js" in page
+
+
 def test_predict(client):
     response = client.post("/predict", json=BUDGET, headers={"X-Request-ID": "abc"})
     body = response.json()
@@ -44,9 +52,7 @@ def test_extrapolation_returns_warning(client):
     assert len(body["warnings"]) == 1
 
 
-@pytest.mark.parametrize(
-    "override", [{"tv": -1}, {"radio": "beaucoup"}, {"tv": 5000}, {"unknown": 1}]
-)
+@pytest.mark.parametrize("override", [{"tv": -1}, {"radio": "beaucoup"}, {"tv": 5000}, {"unknown": 1}])
 def test_invalid_input_returns_422(client, override):
     assert client.post("/predict", json={**BUDGET, **override}).status_code == 422
 

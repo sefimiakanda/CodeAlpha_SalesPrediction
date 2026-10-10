@@ -1,0 +1,232 @@
+/* Sales Prediction : feuille de style de l'interface web. */
+
+/* ---------- Palette (thème clair) ---------- */
+
+:root {
+  --bg:#f4efe6;
+  --card:#fffdf8;
+  --ink:#1b2230;
+  --muted:#6b7280;
+  --line:#e2dacb;
+  --tv:#355c9a;
+  --radio:#e4572e;
+  --news:#8b95a1;
+  --ok:#1f7a4d;
+  --warn:#8a5a00;
+  --warnbg:#fdf0d5;
+}
+
+/* ---------- Thème sombre : suit le réglage du système ---------- */
+
+@media(prefers-color-scheme:dark) {
+  :root {
+    --bg:#141922;
+    --card:#1c2330;
+    --ink:#eef1f6;
+    --muted:#9aa5b5;
+    --line:#2c3647;
+    --tv:#7aa2e3;
+    --radio:#ff8a66;
+    --news:#a3adba;
+    --ok:#5fd19a;
+    --warn:#f2c36b;
+    --warnbg:#3a2f12;
+  }
+}
+
+* {
+  box-sizing:border-box;
+}
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:Manrope,"Segoe UI",system-ui,sans-serif;
+  line-height:1.5;
+}
+
+main {
+  max-width:1000px;
+  margin:0 auto;
+  padding:30px 18px 50px;
+}
+
+h1 {
+  font-size:clamp(1.7rem,4vw,2.5rem);
+  line-height:1.1;
+  font-weight:800;
+  letter-spacing:-.02em;
+  margin:0 0 8px;
+}
+
+.lead {
+  color:var(--muted);
+  margin:0 0 24px;
+  max-width:62ch;
+}
+
+.layout {
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:20px;
+  align-items:start;
+}
+
+@media(max-width:800px) {
+  .layout {
+    grid-template-columns:1fr;
+  }
+}
+
+.card {
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:22px;
+}
+
+h2 {
+  font-size:1.05rem;
+  margin:0 0 14px;
+}
+
+.ch {
+  border-left:5px solid var(--c);
+  padding:2px 0 2px 14px;
+  margin-bottom:20px;
+}
+
+.row {
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:10px;
+}
+
+.row label {
+  font-weight:600;
+}
+
+.row small {
+  color:var(--muted);
+  font-weight:400;
+}
+
+.num {
+  width:90px;
+  padding:7px 9px;
+  font:inherit;
+  text-align:right;
+  color:var(--ink);
+  background:var(--bg);
+  border:1.5px solid var(--line);
+  border-radius:8px;
+}
+
+input[type=range] {
+  width:100%;
+  accent-color:var(--c);
+  margin:8px 0 0;
+}
+
+input:focus-visible,button:focus-visible {
+  outline:3px solid var(--c,var(--tv));
+  outline-offset:2px;
+}
+
+.total {
+  display:flex;
+  justify-content:space-between;
+  border-top:1px solid var(--line);
+  padding-top:12px;
+  font-weight:600;
+}
+
+.big {
+  font-size:clamp(3rem,9vw,4.4rem);
+  font-weight:800;
+  letter-spacing:-.03em;
+  line-height:1;
+  margin:2px 0;
+}
+
+.muted {
+  color:var(--muted);
+  margin:0;
+}
+
+.eff {
+  margin:14px 0 4px;
+}
+
+.eff .bar {
+  height:9px;
+  border-radius:5px;
+  background:var(--c);
+  width:var(--w,0%);
+  min-width:3px;
+  transition:width .35s;
+}
+
+.eff .t {
+  display:flex;
+  justify-content:space-between;
+  font-size:.9rem;
+}
+
+.warn {
+  background:var(--warnbg);
+  color:var(--warn);
+  padding:9px 12px;
+  border-radius:10px;
+  font-size:.88rem;
+  margin-top:10px;
+}
+
+button {
+  font:inherit;
+  font-weight:600;
+  border:0;
+  border-radius:10px;
+  padding:12px 18px;
+  cursor:pointer;
+  background:var(--ink);
+  color:var(--bg);
+}
+
+button.alt {
+  background:none;
+  color:var(--tv);
+  text-decoration:underline;
+  padding:8px 4px;
+}
+
+.opt {
+  margin-top:20px;
+}
+
+.split {
+  display:grid;
+  grid-template-columns:auto 1fr 1fr;
+  gap:6px 14px;
+  margin:14px 0;
+  font-size:.95rem;
+  align-items:center;
+}
+
+.split b {
+  font-weight:600;
+}
+
+.gain {
+  color:var(--ok);
+  font-weight:800;
+  font-size:1.15rem;
+}
+
+.note {
+  font-size:.8rem;
+  color:var(--muted);
+  margin-top:18px;
+}
