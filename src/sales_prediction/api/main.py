@@ -38,7 +38,11 @@ class _JsonFormatter(logging.Formatter):
     """Une ligne JSON par log : facile à filtrer dans le dashboard de Render."""
 
     def format(self, record: logging.LogRecord) -> str:
-        payload: dict[str, Any] = {"level": record.levelname, "logger": record.name, "message": record.getMessage()}
+        payload: dict[str, Any] = {
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
         payload.update(getattr(record, "fields", {}))
         if record.exc_info:
             payload["exception"] = self.formatException(record.exc_info)
@@ -90,10 +94,15 @@ def create_app(model_service: ModelService | None = None) -> FastAPI:
         finally:
             logger.info(
                 "request",
-                extra={"fields": {
-                    "request_id": request_id, "method": request.method, "path": request.url.path,
-                    "status": status, "duration_ms": round((time.perf_counter() - start) * 1000, 2),
-                }},
+                extra={
+                    "fields": {
+                        "request_id": request_id,
+                        "method": request.method,
+                        "path": request.url.path,
+                        "status": status,
+                        "duration_ms": round((time.perf_counter() - start) * 1000, 2),
+                    }
+                },
             )
 
     def model_of(request: Request) -> ModelService:

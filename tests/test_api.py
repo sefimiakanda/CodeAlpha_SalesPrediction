@@ -52,7 +52,9 @@ def test_extrapolation_returns_warning(client):
     assert len(body["warnings"]) == 1
 
 
-@pytest.mark.parametrize("override", [{"tv": -1}, {"radio": "beaucoup"}, {"tv": 5000}, {"unknown": 1}])
+@pytest.mark.parametrize(
+    "override", [{"tv": -1}, {"radio": "beaucoup"}, {"tv": 5000}, {"unknown": 1}]
+)
 def test_invalid_input_returns_422(client, override):
     assert client.post("/predict", json={**BUDGET, **override}).status_code == 422
 
