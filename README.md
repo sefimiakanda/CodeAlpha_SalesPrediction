@@ -25,16 +25,7 @@ Developed as part of an internship project at CodeAlpha. The brief:
 | Analyze how advertising changes sales | Marginal effects, response curves, what-if scenarios, budget optimizer (`analysis.py`, notebook section 12) |
 | Actionable marketing insights | Recommendations at the end of the notebook; `POST /optimize` and the web interface |
 
-## 🔎 Key Findings
 
-*(Dataset: 200 campaigns, budgets in thousands of dollars, sales in thousands of units.)*
-
-- **Newspaper has no measurable effect.** Its p-value is ≈ 0.70, it adds nothing in cross-validation, and its raw correlation with sales comes from its link with Radio spend (a confounder). It is excluded from the model.
-- **TV and Radio reinforce each other** (positive TV × Radio interaction), and **TV shows diminishing returns** (negative TV² term). A model with these two terms reaches a cross-validated **R² ≈ 0.98**, against ≈ 0.88 for a plain linear regression, and matches or beats Random Forest and Gradient Boosting while staying interpretable.
-- **At the average budget, an extra $1,000 on Radio sells about 4× more units than on TV** (≈ 193 vs ≈ 44 units); on Newspaper it sells none.
-- **Reallocating the same total budget** (≈ $201k) from the current average mix to TV ≈ $151k + Radio ≈ $49k + no Newspaper raises forecast sales by about **+36 %**. Suggested budgets are capped at the maximum values seen in the data; beyond them the model cannot judge.
-
-Final model on the held-out test set: **R² ≈ 0.989, RMSE ≈ 0.60, MAE ≈ 0.50** (thousand units).
 
 ## 📂 Structure
 
@@ -140,7 +131,7 @@ Tips if the build is slow or stuck:
 - **`ci.yml`** — on every push and pull request: install from the lockfile, `ruff` (lint and format), tests with coverage, then build the Docker image (which trains the model) and smoke-test the running container.
 - **`release.yml`** — on a version tag (`git tag v0.1.0 && git push --tags`): builds and publishes the image to GitHub Container Registry (`ghcr.io`).
 
-## ☁️ Deployment on Render (Docker)
+## ☁️ Deployment on Render
 
 Deployment is described by `render.yaml`; Render builds the `Dockerfile` on its own servers.
 
@@ -164,8 +155,6 @@ services:
 
 Every `git push` to the linked branch redeploys automatically. To deploy only after CI passes, set *Auto-Deploy → After CI Checks Pass* in the service settings.
 
-**Without Docker:** `render.yaml` contains a commented native-Python variant (`runtime: python`, build and start commands with uv). Swap the blocks to use it.
-
 **Free tier limitations** (they change regularly; check Render's pricing page): the service spins down after about 15 minutes of inactivity and takes around a minute to wake up; memory is limited to about 512 MB; the filesystem is ephemeral (the model is rebuilt on each deployment, so this is not an issue); the URL is public and unauthenticated.
 
 **Troubleshooting**
@@ -178,15 +167,6 @@ Every `git push` to the linked branch redeploys automatically. To deploy only af
 | `ModelQualityError` | Test R² below `quality_gate.min_r2` | Check the data and `configs/config.yaml` |
 | `No open ports detected` | The app does not listen on `$PORT` | Keep the `CMD` of the `Dockerfile` unchanged |
 
-## ⚠️ Limitations
-
-- **Small dataset** (200 campaigns, no date): no seasonality, trend or delayed advertising effect can be modeled.
-- **Correlation, not causation:** results describe observed associations; a controlled experiment would confirm them.
-- **Extrapolation:** forecasts outside the observed budgets (TV > 296, Radio > 50, Newspaper > 114) are unreliable, and the optimizer is capped at those maxima.
-- **Very low TV budgets:** the model overestimates sales when TV spend is close to zero (two such campaigns in the data); do not use it to simulate dropping TV entirely.
-- **Statistical caveat:** residuals are not perfectly normal because of those two campaigns, so p-values and confidence intervals are indicative; the API therefore returns no prediction intervals.
-- The model maximizes **sales**, not profit: costs and margins are not included.
-- Units are those of the original dataset (budgets in thousands of dollars, sales in thousands of units).
 
 ## 💎 Production Practices
 
